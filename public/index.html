@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Aplicacion con Sockets</title>
+  <link href="bootstrap-4.1.3/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link href="css/login.css" rel="stylesheet">
+  <link href="css/table.css" rel="stylesheet">
+  <link href="css/particles.css" rel="stylesheet">
+  <script src="bootstrap-4.1.3/js/bootstrap.min.js"></script>
+  <script src="jquery/jquery-3.4.1.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/main.js"></script>
+</head>
+<body>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
+  <div id="contenedor_principal">
+    <div class="card-body mx-auto text-center bg-dark">
+      <div id="login">
+        <div class="card-header mx-auto bg-dark">
+          <h1>Bienvenido</h1>
+        </div>
+        <div class="logo form-group">
+          <img src="icons/happy.svg" class="icon"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="contenedor_chat">
+    <div class="card-body">
+      <div id="messages"></div>
+      <br/>
+      <form onsubmit="return addMessage(this)">
+        <input type="text" id="username" placeholder="Tu Nombre" >
+        <input type="text" id="texto" placeholder="Cuéntanos algo...">
+        <input type="submit" value="Enviar!">
+      </form>
+    </div>
+  </div>
+</body>
+</html>
