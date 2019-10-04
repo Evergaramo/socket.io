@@ -16,24 +16,22 @@
 </head>
 <body>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
-  <div id="contenedor_principal">
+  <div id="contenedor_partida">
     <div class="card-body mx-auto text-center bg-dark">
       <div id="login">
         <div class="card-header mx-auto bg-dark">
           <h1>Bienvenido</h1>
         </div>
-        <div class="logo form-group">
-          <img src="icons/happy.svg" class="icon"/>
-        </div>
+        <div id="usuario"></div>
       </div>
     </div>
   </div>
   <div id="contenedor_chat">
     <div class="card-body">
+      <h2>Chat:</h2>
       <div id="messages"></div>
       <br/>
       <form onsubmit="return addMessage(this)">
-        <input type="text" id="username" placeholder="Tu Nombre" >
         <input type="text" id="texto" placeholder="Cuéntanos algo...">
         <input type="submit" value="Enviar!">
       </form>

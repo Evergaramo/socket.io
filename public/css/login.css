@@ -1,5 +1,4 @@
 body {
-	height: 100%;
 	background-repeat: no-repeat;    
 	background-image: linear-gradient(rgb(12, 97, 33),rgb(104, 145, 162));
 	background: #E9E9E9;
@@ -85,17 +84,17 @@ input:focus{
 }
 
 .icon {
-	width: 15%;
-	max-width: 500px;
+	width: 6%;
 }
 
-#contenedor_principal{
+#contenedor_partida{
 	border: 4px solid red;
 	border-radius: 5px;
 	margin: 2.5% 2.5% 0% 5%;
 	padding: 0%;
 	width: 58.75%;
 	float: left;
+	height: 840px;
 }
 
 #contenedor_chat{
@@ -106,4 +105,33 @@ input:focus{
 	width: 28.75%;
 	float: left;
 	background-color: white;
+	height: 840px;
+}
+
+#messages{
+	overflow: auto;
+	height: 680px;
+	border: 1px solid black;
+	padding: 10px;
+}
+
+h2 {
+  font-weight: bold;
+}
+
+h3 {
+  color: red;
+}
+
+@media screen and (max-width:640px) {
+	/* reglas CSS */
+}
+@media screen and (max-width:1024px) and (min-width:640px) {
+	/* reglas CSS */
+}
+@media screen and (max-width:1440px) and (min-width:1024px) {
+	/* reglas CSS */
+}
+@media screen and (min-width:1440px) {
+	/* reglas CSS */
 }
