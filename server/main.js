@@ -18,12 +18,12 @@ jugadores.push({id: n_jugadores.toString(),
 //array partidas
 var n_partidas = 1;
 var partidas = [{id: n_partidas.toString(),
-                  objeto_partida: new Partida(n_partidas.toString(), "partida_" + n_partidas.toString(), "", jugadores.find( jugador => jugador.id === '1' ).objeto_jugador, 4)
+                  objeto_partida: new Partida(n_partidas.toString(), "partida_" + n_partidas.toString(), "", jugadores.find( jugador => jugador.id === '1' ).objeto_jugador, 40)
                   }];
 jugadores.find( jugador => jugador.id === '1' ).objeto_jugador.setPartida('1');
 n_partidas=n_partidas+1;
 partidas.push({id: n_partidas.toString(),
-                  objeto_partida: new Partida(n_partidas.toString(), "partida_" + n_partidas.toString(), "123", jugadores.find( jugador => jugador.id === '2' ).objeto_jugador, 2)
+                  objeto_partida: new Partida(n_partidas.toString(), "partida_" + n_partidas.toString(), "123", jugadores.find( jugador => jugador.id === '2' ).objeto_jugador, 20)
                   });
 jugadores.find( jugador => jugador.id === '1' ).objeto_jugador.setPartida('2');
 
@@ -68,15 +68,20 @@ io.on('connection', function(socket) {
   socket.on('unirse-partida', function(data) {
     var partida = partidas.find( partida => partida.id === data.id_partida );
     var jugador = jugadores.find( jugador => jugador.id === data.id_jugador);
-    var _respuesta = partida.objeto_partida.anadirJugador(jugador);
+    var _respuesta = partida.objeto_partida.anadirJugador(jugador, data.id_jugador);
+    var _html = partida.objeto_partida.getHTMLPartida();
+    var _array_jugadores_en_juego = partida.objeto_partida.getArrayJugadoresEnJuego();
     // hay tres respuestas (ver modulo partida)
     if(_respuesta === 1){
+      //actualizar n jugadores
       jugador.objeto_jugador.setPartida(data.id_partida);
       io.sockets.emit('partidas', partidas);
     }
     data = {
       respuesta: _respuesta,
-      partida: partida.objeto_partida
+      partida: partida.objeto_partida,
+      html: _html,
+      array_jugadores_en_juego: _array_jugadores_en_juego
     };
     io.sockets.emit('jugar', data);
   });
@@ -84,7 +89,9 @@ io.on('connection', function(socket) {
   socket.on('validar-pass', function(data) {
     var jugador = jugadores.find( jugador => jugador.id === data.id_jugador);
     var partida = partidas.find( partida => partida.id === data.id_partida );
-    var _respuesta = partida.objeto_partida.comprobar_pass(data.pass, data.jugador);
+    var _respuesta = partida.objeto_partida.comprobar_pass(data.pass, data.jugador, data.id_jugador);
+    var _html = partida.objeto_partida.getHTMLPartida();
+    var _array_jugadores_en_juego = partida.objeto_partida.getArrayJugadoresEnJuego();
     // hay tres respuestas (ver modulo partida)
     if(_respuesta === 1){
       jugador.objeto_jugador.setPartida(data.id_partida);
@@ -92,7 +99,9 @@ io.on('connection', function(socket) {
     }
     data = {
       respuesta: _respuesta,
-      partida: partida.objeto_partida
+      partida: partida.objeto_partida,
+      html: _html,
+      array_jugadores_en_juego: _array_jugadores_en_juego
     };
     io.sockets.emit('respuesta-pass', data);
   });
@@ -106,6 +115,54 @@ io.on('connection', function(socket) {
     if(partida.objeto_partida.n_jug < 1)
       jugadores.slice(partida.objeto_partida.id);
     io.sockets.emit('partidas', partidas);
+  });
+  //juego
+  socket.on('mover', function(data) {
+    var partida = partidas.find( partida => partida.id === data.id_partida );
+    var estado = partida.objeto_partida.estado;
+    if(estado === 0 || estado === 2){
+      data = {
+        estado: estado,
+        id_jugador: data.id_jugador
+      }
+      io.sockets.emit('respuesta-movimiento', data);
+    }
+    else if(estado === 1) {
+      var tuTurno = partida.objeto_partida.tuTurno(data.id_jugador);
+      if(tuTurno === false){
+        data = {
+          estado: estado,
+          tuTurno: tuTurno,
+          id_jugador: data.id_jugador
+        }
+        io.sockets.emit('respuesta-movimiento', data);
+      }else{
+        var puedoMover = partida.objeto_partida.puedoMover(data.celda);
+        if(puedoMover === false){
+          data = {
+            estado: estado,
+            tuTurno: tuTurno,
+            puedoMover: puedoMover,
+            id_jugador: data.id_jugador
+          }
+          io.sockets.emit('respuesta-movimiento', data);
+        }
+        else{
+          partida.objeto_partida.setCelda(data.celda, data.figura);
+          var html = partida.objeto_partida.getHTMLtabla();
+          var fin = partida.objeto_partida.final();
+          data = {
+            estado: estado,
+            tuTurno: tuTurno,
+            puedoMover: puedoMover,
+            html: html,
+            fin: fin,
+            id_jugador: data.id_jugador
+          }
+          io.sockets.emit('respuesta-movimiento', data);
+        }
+      }
+    }
   });
 });
 

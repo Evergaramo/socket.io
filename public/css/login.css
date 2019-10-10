@@ -108,17 +108,6 @@ input:focus{
 	height: 840px;
 }
 
-#contenedor_partida{
-	border: 4px solid green;
-	border-radius: 5px;
-	margin: 2.5%;
-	padding: 10%;
-	width: 95%;
-	float: center;
-	background-color: white;
-	height: 850px;
-}
-
 #messages{
 	overflow: auto;
 	height: 680px;
@@ -132,6 +121,10 @@ h2 {
 
 h3 {
   color: red;
+}
+
+h5 {
+  text-align: center;
 }
 
 @media screen and (max-width:640px) {

@@ -144,22 +144,25 @@ function drop(ev) {
 *
 **/
 socket.on('jugar', function(data) {
-  if(data.respuesta === 1){
-    jugar(data.partida);
-  }
-  else if(data.respuesta === 2){
-    alert('Max jugadores alcanzado');
-  }
-  else if(data.respuesta === 3){
-    html = '<h4>Introduce contraseña:</h4>'+
-      '<input type="password" id="pass"/>'+
-      '<button onclick="validar()">Enviar</button>'+
-      '<br>'+
-      '<button onclick="desplegar_menu()">Volver Atrás</button>';
-    document.getElementById('contenedor_partida').innerHTML = html;
-    document.getElementById('contenedor_partida').style.display = "block";
-    document.getElementById('contenedor_menu').style.display = "none";
-    document.getElementById('contenedor_chat').style.display = "none";
+  //Así no se verán afectados todas las conexiones (léase pestañas), sólo la que tiene el mismo id de partida
+  if(id_partida === data.partida.id){
+    if(data.respuesta === 1){
+      jugar(data.partida, data.html, data.array_jugadores_en_juego);
+    }
+    else if(data.respuesta === 2){
+      alert('Max jugadores alcanzado');
+    }
+    else if(data.respuesta === 3){
+      html = '<h4>Introduce contraseña:</h4>'+
+        '<input type="password" id="pass"/>'+
+        '<button onclick="validar()">Enviar</button>'+
+        '<br>'+
+        '<button onclick="desplegar_menu()">Volver Atrás</button>';
+      document.getElementById('contenedor_partida').innerHTML = html;
+      document.getElementById('contenedor_partida').style.display = "block";
+      document.getElementById('contenedor_menu').style.display = "none";
+      document.getElementById('contenedor_chat').style.display = "none";
+    }
   }
 })
 
@@ -175,7 +178,7 @@ function validar(){
 
 socket.on('respuesta-pass', function(data) {
   if(data.respuesta === 1){
-    jugar(data.partida);
+    jugar(data.partida, data.html, data.array_jugadores_en_juego);
   }
   else if(data.respuesta === 2){
     alert('Max jugadores alcanzado');
@@ -209,14 +212,94 @@ function salir(){
   desplegar_menu();
 }
 
-function jugar(partida){
-  html = '<h1>Bienvenido a la partida ' + partida.nombre + '</h1>'+
-    '<button onclick="desplegar_menu()">salir</button>';
-    document.getElementById('contenedor_partida').innerHTML = html;
-    document.getElementById('contenedor_partida').style.display = "block";
-    document.getElementById('contenedor_menu').style.display = "none";
-    document.getElementById('contenedor_chat').style.display = "none";
+function jugar(partida, html, array_jugadores_en_juego){
+  var jug1 = array_jugadores_en_juego[0];
+  if(jug1 === id_jugador){
+    html += '<div id="figura">';
+    html += '<img style="margin: 65px 130px"; id="figura1" src="img/cross.png" draggable="true" ondragstart="dragFigura(event)">';
+    html += '</div>';
+  }
+  var jug2 = array_jugadores_en_juego[1];
+  if(jug2 === id_jugador){
+    html += '<div id="figura">';
+    html += '<img style="margin: 65px 130px"; id="figura2" src="img/circle.png" draggable="true" ondragstart="dragFigura(event)">';
+    html += '</div>';
+  }
+  html += '</div>';
+  html += '<div id="salir"><button onclick="desplegar_menu()">salir</button></div>';
+  if(id_jugador != jug1 && id_jugador != jug2)
+    html += '<br><h5 id="visitante">Has entrado en la sala cómo visitante</h5>';
+  document.getElementById('contenedor_partida').innerHTML = html;
+  document.getElementById('contenedor_partida').style.display = "block";
+  document.getElementById('contenedor_menu').style.display = "none";
+  document.getElementById('contenedor_chat').style.display = "none";
+  // si el jugador se mete una vez terminada la partida
+  if(partida.estado === 2)
+    alert('La partida ha terminado');
 }
+
+/**
+* Juego
+*
+*/
+function allowDropFigura(ev) {
+  ev.preventDefault();
+}
+
+function dragFigura(ev) {
+  ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function dropFigura(ev) {
+  ev.preventDefault();
+  var figura = ev.dataTransfer.getData("text");
+
+
+  data = {
+    id_jugador: id_jugador,
+    id_partida: id_partida,
+    figura: figura,
+    celda: event.target.id
+  }
+
+  socket.emit('mover', data);
+  /*if(data=='figura1')
+    html = '<img style="vertical-align: baseline;" src="img/cross.png" draggable="false">';
+  else if(data=='figura2')
+    html = '<img style="vertical-align: baseline;" src="img/circle.png" draggable="false">';
+  document.getElementById(event.target.id).innerHTML = html;
+  var elem = document.getElementById(event.target.id);
+  elem.setAttribute('draggable', false);*/
+}
+
+socket.on('respuesta-movimiento', function(data) {
+  var estado = data.estado;
+  if(estado === 0){
+    if(id_jugador === data.id_jugador)
+      alert('Aún no hay jugadores suficientes');
+  }
+  else if(estado === 2){
+    if(id_jugador === data.id_jugador)
+      alert('La partida ha terminado');
+  }
+  else if(estado === 1){
+    if(data.tuTurno === false){
+      if(id_jugador === data.id_jugador)  
+        alert('no es tu turno');
+    }
+    else{
+      if(data.puedoMover === true){
+        var html = data.html;
+        document.getElementById('tablero').innerHTML = html;
+        if(data.fin === true){
+          alert('fin de la partida');
+          if(id_jugador === data.id_jugador)
+            alert('¡has ganado!');
+        }
+      }
+    }
+  }
+});
 
 /**
 * Fin de la conexión

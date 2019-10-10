@@ -1,0 +1,44 @@
+#contenedor_partida{
+	border: 4px solid green;
+	border-radius: 5px;
+	margin: 20px;
+	padding: 20px;
+	width: 440px;
+	background-color: white;
+	height: 850px;
+}
+
+/*#juego {
+	width: 620px;
+	height: 400px;
+}*/
+
+#tablero {
+	float: center;
+	width: 396px;
+	height: 396px;
+	border: 2px solid #000;
+}
+
+/*.fila {
+	width: 396px;
+	height: 132px;
+}*/
+
+.columna {
+	width: 130px;
+	height: 130px;
+	font-size: 30px;
+	float: left;
+	border: 1px solid #c0c0c0;
+	/*background-color: #336D9C;*/
+	cursor: pointer;
+	font-size: 120px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+/*.columna:hover {
+	background-color: #330000;
+	border: 1px solid #c0c0c0;
+};*/
