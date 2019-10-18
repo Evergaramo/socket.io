@@ -9,6 +9,28 @@ var id_jugador;
 var jugador_data;
 var id_partida;
 
+// html5 storage
+if (typeof(Storage) !== "undefined") {  
+  id_jugador = localStorage.getItem("last_id_jugador");
+  jugador_data = localStorage.getItem("last_jugador_data");
+  id_partida = localStorage.getItem("last_id_partida");
+  if(id_jugador === null || jugador_data === null || id_partida === null)
+    socket.emit('anadir-jugador');
+  else{
+    /*data = {
+      id: id_jugador,
+      objeto_jugador: jugador_data
+    }
+    //render_jugador(data);
+    unirsePartida(id_partida);*/
+    socket.emit('anadir-jugador');
+  }
+} else {
+  socket.emit('anadir-jugador');
+}
+
+
+
 // recibimos info del objeto jugador añadido
 socket.on('object_jugador', function(data) {
   console.log(data);
@@ -25,6 +47,10 @@ function render_jugador (data) {
             <div class='logo form-group'>
               <h3>${data.objeto_jugador.nombre}</h3>
             </div>`;
+
+  // jugador storage
+  localStorage.setItem("last_id_jugador", data.id);   
+  localStorage.setItem("last_jugador_data", data.objeto_jugador);
 
   document.getElementById('usuario').innerHTML = html;
 }
@@ -213,6 +239,9 @@ function salir(){
 }
 
 function jugar(partida, html, array_jugadores_en_juego){
+  // storage partida
+  localStorage.setItem("last_id_partida", partida.id);
+
   var jug1 = array_jugadores_en_juego[0];
   if(jug1 === id_jugador){
     html += '<div id="figura">';

@@ -5,6 +5,40 @@ var io = require('socket.io')(server);
 const Jugador = require('./modules/jugador.js');
 const Partida = require('./modules/partida.js');
 
+// mongodb
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
+var PartidasShowCtrl = require('./controllers/partidaShows');
+//mongoose.connect('mongodb://localhost/partidas');
+mongoose.createConnection('mongodb://localhost/partidas');
+
+// api rest models
+var models     = require('./models/partidas')(app, mongoose);
+var PartidasShowCtrl = require('./controllers/partidaShows');
+
+// iniciar express
+app.use(express.static('public'));
+
+// API rest
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(methodOverride());
+
+// API routes
+var partidasshows = express.Router();
+
+partidasshows.route('/partidasshows')
+  .get(PartidasShowCtrl.findAllPartidasShows)
+  .post(PartidasShowCtrl.addPartidaShow);
+
+/*app.get('/hello', function(req, res) {
+  res.status(200).send("Hello World!");
+});*/
+
+app.use('/api', tvshows);
+
+// ARRAYS DINAMICOS
 // array jugadores
 var n_jugadores = 1;
 var jugadores = [{id: n_jugadores.toString(),
@@ -35,12 +69,7 @@ var messages = [{
   author: jugadores.find( jugador => jugador.id === '1' ).objeto_jugador.nombre
 }];
 
-app.use(express.static('public'));
-
-app.get('/hello', function(req, res) {
-  res.status(200).send("Hello World!");
-});
-
+//Socket principal de conexión
 io.on('connection', function(socket) {
   console.log('Alguien se ha conectado con Sockets');
 
@@ -53,15 +82,17 @@ io.on('connection', function(socket) {
   });
 
   // jugadores
-  // añadimos jugador
-  n_jugadores = n_jugadores + 1;
-  jugadores.push({
-    id: n_jugadores.toString(),
-    objeto_jugador: new Jugador("jugador_" + n_jugadores.toString(), "happy")
+  // añadimos jugador si no hay nada en el html5 storage
+  socket.on('anadir-jugador', function() {
+    n_jugadores = n_jugadores + 1;
+    jugadores.push({
+      id: n_jugadores.toString(),
+      objeto_jugador: new Jugador("jugador_" + n_jugadores.toString(), "happy")
+    });
+    // pasamos el jugador recien creado
+    socket.emit('object_jugador', jugadores.find( jugador => jugador.id === n_jugadores.toString() ));
   });
-  // pasamos el jugador recien creado
-  socket.emit('object_jugador', jugadores.find( jugador => jugador.id === n_jugadores.toString() ));
-  
+
   //partidas
   socket.emit('partidas', partidas);
   // unirse a partida
