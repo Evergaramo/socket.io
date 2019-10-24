@@ -1,6 +1,6 @@
 //File: controllers/partidaShow.js
 var mongoose = require('mongoose');
-var PartidaShow  = mongoose.model('PartidaShow');
+//var PartidaShow  = mongoose.model('PartidaShow');
 
 //GET - Return all partidaShow in the DB
 exports.findAllPartidasShows = function(req, res) {

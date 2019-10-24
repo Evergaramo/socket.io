@@ -36,7 +36,7 @@ partidasshows.route('/partidasshows')
   res.status(200).send("Hello World!");
 });*/
 
-app.use('/api', tvshows);
+app.use('/api', partidasshows);
 
 // ARRAYS DINAMICOS
 // array jugadores
