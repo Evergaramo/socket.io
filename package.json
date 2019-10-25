@@ -14,7 +14,8 @@
     "express": "^4.17.1",
     "method-override": "^2.1.2",
     "mongodb": "^3.3.3",
-    "mongoose": "~3.6.11",
-    "socket.io": "^2.3.0"
+    "mongoose": "^5.7.5",
+    "socket.io": "^2.3.0",
+    "mpath": ">=0.5.1"
   }
 }
