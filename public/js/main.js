@@ -1,3 +1,12 @@
+/**
+*
+* Busca:
+*	AJAX -> get
+*	AJAX -> post
+*
+*/
+
+
 const socket = io.connect('http://localhost:8080', { 'forceNew': true });
 
 /**
@@ -97,6 +106,62 @@ socket.on('partidas', function(data) {
   console.log(data);
   render_partidas(data);
 })
+
+//AJAX -> get
+async function recibir() {
+	let url = 'http://localhost:8080/partidasshows';
+	let response = await fetch(url);
+	let partidas = await response.json(); // read response body and parse
+	var html_partidas = '<table>';
+	'<thead>'+
+          '<tr>'+
+            '<th>dia'+
+            '</th>'+
+            '<th>Nombre'+
+            '</th>'+
+            '<th>Id Partida'+
+            '</th>'+
+			'<th>Jugador 1'+
+            '</th>'+
+            '<th>Jugador 2'+
+            '</th>'+
+            '<th>Id ganador'+
+            '</th>'+
+          '</tr>'+
+        '</thead>'+
+        '<tbody>';
+	for (var i = 0; i < partidas.length; i++) {
+		var dia = partidas[i].dia;
+		var nombre = partidas[i].nombre;
+		var id_partida = partidas[i].id_partida;
+		var nombre_jug1 = partidas[i].nombre_jug1;
+		var nombre_jug2 = partidas[i].nombre_jug2;
+		var id_ganador = partidas[i].id_ganador;
+		html_partidas+='<tr>';
+		html_partidas+='<th>';
+		html_partidas+=dia;
+		html_partidas+='</th>';
+		html_partidas+='<th>';
+		html_partidas+=nombre;
+		html_partidas+='</th>';
+		html_partidas+='<th>';
+		html_partidas+=id_partida;
+		html_partidas+='</th>';
+		html_partidas+='<th>';
+		html_partidas+=nombre_jug1;
+		html_partidas+='</th>';
+		html_partidas+='<th>';
+		html_partidas+=nombre_jug2;
+		html_partidas+='</th>';
+		html_partidas+='<th>';
+		html_partidas+=id_ganador;
+		html_partidas+='</th>';
+		html_partidas+='</tr>';
+	}
+    html_partidas += '</tbody></table>';
+	document.getElementById('historial').innerHTML = html_partidas;
+}
+recibir();
 
 function render_partidas (data) {
 
@@ -322,8 +387,30 @@ socket.on('respuesta-movimiento', function(data) {
         document.getElementById('tablero').innerHTML = html;
         if(data.fin === true){
           alert('fin de la partida');
-          if(id_jugador === data.id_jugador)
+          if(id_jugador === data.id_jugador){
             alert('¡has ganado!');
+			
+			//AJAX -> post
+			async function enviar() {
+				let partida = {
+					dia : new Date(),
+					id_partida : data.id_partida,
+					nombre : data.nombre,
+					nombre_jug1 : data.id_jug1,
+					nombre_jug2 : data.id_jug2,
+					id_ganador : id_jugador
+				}
+				let response =  await fetch('http://localhost:8080/partidasshows', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json;charset=utf-8'
+					},
+					body: JSON.stringify(partida)
+				});
+				let result = await response.json();
+				alert(result.message);
+			}
+		  }
         }
       }
     }

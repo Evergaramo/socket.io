@@ -1,23 +1,23 @@
 //File: controllers/partidaShow.js
 var mongoose = require('mongoose');
-//var PartidaShow  = mongoose.model('PartidaShow');
+var PartidaShow  = mongoose.model('PartidaShow');
 
 //GET - Return all partidaShow in the DB
 exports.findAllPartidasShows = function(req, res) {
-	PartidaShow.find(function(err, patidasshows) {
+	PartidaShow.find(function(err, patidasShows) {
     if(err) res.send(500, err.message);
 
     console.log('GET /partidas')
-		res.status(200).jsonp(patidasshows);
+		res.status(200).jsonp(patidasShows);
 	});
 };
 
-//POST - Insert a new TVShow in the DB
+//POST - Insert a new PartidaShow in the DB
 exports.addPartidaShow = function(req, res) {
 	console.log('POST');
 	console.log(req.body);
 
-	var partidashow = new TVShow({
+	var partidaShow = new PartidaShow({
 		dia:    req.body.dia,
 		nombre: 	  req.body.nombre,
 		id_partida:  req.body.id_partida,
@@ -26,9 +26,10 @@ exports.addPartidaShow = function(req, res) {
 		id_ganador:    req.body.id_ganador
 	});
 
-	partidashow.save(function(err, partidashow) {
+	partidaShow.save(function(err, partidaShow) {
 		if(err) return res.status(500).send( err.message);
-    res.status(200).jsonp(partidashow);
+			res.status(200).jsonp(partidaShow);
 	});
 };
 
+//

@@ -1,3 +1,14 @@
+/**
+*
+* Busca:
+*	mongodb
+*	api rest models
+*	API rest
+*	API routes
+*	mongoose
+*
+*/
+
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
@@ -9,13 +20,12 @@ const Partida = require('./modules/partida.js');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
-var PartidasShowCtrl = require('./controllers/partidaShows');
-//mongoose.connect('mongodb://localhost/partidas');
-mongoose.createConnection('mongodb://localhost/partidas');
+//mongoose.createConnection('mongodb://localhost/partidas');
+
 
 // api rest models
-var models     = require('./models/partidas')(app, mongoose);
-var PartidasShowCtrl = require('./controllers/partidaShows');
+var models     = require('./models/partidaShow')(app, mongoose);
+var PartidaShowCtrl = require('./controllers/partidaShows');
 
 // iniciar express
 app.use(express.static('public'));
@@ -26,17 +36,17 @@ app.use(bodyParser.json());
 app.use(methodOverride());
 
 // API routes
-var partidasshows = express.Router();
+var partidasShows = express.Router();
 
-partidasshows.route('/partidasshows')
-  .get(PartidasShowCtrl.findAllPartidasShows)
-  .post(PartidasShowCtrl.addPartidaShow);
+partidasShows.route('/partidasshows')
+  .get(PartidaShowCtrl.findAllPartidasShows)
+  .post(PartidaShowCtrl.addPartidaShow);
 
 /*app.get('/hello', function(req, res) {
   res.status(200).send("Hello World!");
 });*/
 
-app.use('/api', partidasshows);
+app.use('/api', partidasShows);
 
 // ARRAYS DINAMICOS
 // array jugadores
@@ -182,19 +192,32 @@ io.on('connection', function(socket) {
           partida.objeto_partida.setCelda(data.celda, data.figura);
           var html = partida.objeto_partida.getHTMLtabla();
           var fin = partida.objeto_partida.final();
+		  var o_partida = partida.objeto_partida;
           data = {
             estado: estado,
             tuTurno: tuTurno,
             puedoMover: puedoMover,
             html: html,
             fin: fin,
-            id_jugador: data.id_jugador
+            id_jugador: data.id_jugador,
+			//para AJAX POST
+			id_partida: o_partida.getID(),
+			nombre: o_partida.getNombre(),
+			id_jug1: o_partida.getJug1(),
+			id_jug2: o_partida.getJug2()
           }
           io.sockets.emit('respuesta-movimiento', data);
         }
       }
     }
   });
+});
+
+// conectamos con MongoDB e iniciamos el servidor
+mongoose.connect('mongodb://localhost/partidaShow', function(err, res){
+	if(err){
+		console.log('ERROR: connecting to Database. ' + err);
+	}
 });
 
 server.listen(8080, function() {

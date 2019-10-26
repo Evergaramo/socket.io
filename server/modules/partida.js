@@ -189,6 +189,26 @@ class Partida {
   getArrayJugadoresEnJuego(){
     return this.ids_jug;
   }
+  
+  //AJAX
+  
+  getID(){
+	  return this.id;
+  }
+  
+  getNombre(){
+	  return this.nombre;
+  }
+  
+  getJug1(){
+	  //return this.jugadores.find( jugador => jugador.id === '1' ).objeto_jugador.nombre;
+	  return 'jugador1';
+  }
+  
+  getJug2(){
+	  //return this.jugadores.find( jugador => jugador.id === '2' ).objeto_jugador.nombre;
+	  return 'jugador2';
+  }
 
 }
 
